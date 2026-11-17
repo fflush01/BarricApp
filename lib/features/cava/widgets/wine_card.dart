@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:barricapp/features/cava/models/wine.dart';
+import 'package:barricapp/features/cava/screens/cata_detail_screen.dart';
 
 class WineCard extends StatelessWidget {
   final Wine wine;
+  final VoidCallback onRefresh;
 
-  const WineCard({super.key, required this.wine});
+  const WineCard({super.key, required this.wine, required this.onRefresh});
 
   @override
   Widget build(BuildContext context) {
@@ -13,54 +15,68 @@ class WineCard extends StatelessWidget {
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Expanded(
-              child: Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: isRedWine
-                      ? const Color(0xFF800020)
-                      : Colors.amber.shade100,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: const Icon(
-                  Icons.wine_bar,
-                  color: Colors.white,
-                  size: 40,
-                ),
-              ),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: () async {
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => CataDetailScreen(wine: wine),
             ),
-            const SizedBox(height: 12),
-            Text(
-              wine.nombre,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-            Text(
-              wine.tipoUva,
-              style: const TextStyle(color: Colors.grey, fontSize: 12),
-            ),
-            const SizedBox(height: 4),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(
-                5,
-                (index) => Icon(
-                  index < wine.calificacion.floor()
-                      ? Icons.star
-                      : Icons.star_border,
-                  color: Colors.amber,
-                  size: 16,
+          );
+          if (result == true) {
+            onRefresh();
+          }
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                child: Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: isRedWine
+                        ? const Color(0xFF800020)
+                        : Colors.amber.shade100,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(
+                    Icons.wine_bar,
+                    color: Colors.white,
+                    size: 40,
+                  ),
                 ),
               ),
-            ),
-          ],
+              const SizedBox(height: 12),
+              Text(
+                wine.nombre,
+                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+              Text(
+                wine.tipoUva,
+                style: const TextStyle(color: Colors.grey, fontSize: 12),
+              ),
+              const SizedBox(height: 4),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(
+                  5,
+                  (index) => Icon(
+                    index < wine.calificacion.floor()
+                        ? Icons.star
+                        : Icons.star_border,
+                    color: Colors.amber,
+                    size: 16,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
